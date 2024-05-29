@@ -1,0 +1,71 @@
+[tool.poetry]
+name = "hackaton-bi-service"
+version = "1.1.1"
+description = ""
+authors = ["Adrian <adrian@verihubs.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+fastapi = {extras = ["all"], version = "^0.93.0"}
+SQLAlchemy = "^1.4.46"
+orjson = "^3.8.7"
+prometheus-fastapi-instrumentator = "^5.7.1"
+psycopg2-binary = "^2.9.1"
+pybase64 = "^1.2.3"
+
+[tool.poetry.group.dev.dependencies]
+autopep8 = "^2.0.2"
+prospector = "^1.9.0"
+bandit = "^1.7.0"
+black = "^23.1.0"
+alembic = "^1.10.2"
+coverage = {version = "^7.2.2", extras = ["toml"]}
+safety = "^2.0.0"
+poethepoet = "^0.18.1"
+vulture = "2.7"
+faker = "^18.4.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poe.tasks]
+clean = """
+sudo rm -rf .coverage
+       ./**/.pytest_cache
+       dist
+       ./**/__pycache__
+       htmlcov
+       .coverage_report
+       coverage.json
+       coverage.xml
+       report.xml
+"""
+
+[tool.black]
+line-length = 79
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+  | database
+  | deployment
+  | documentation
+  | __init__.py
+)/
+'''
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+line_length = 79
+skip = [".venv", "deployment", "documentation", "database", "__init__.py"]
+

@@ -1,0 +1,23 @@
+output-format: vscode
+
+ignore-paths:
+  - database
+  - model
+
+bandit:
+  run: false
+
+pycodestyle:
+  disable:
+    - E501
+
+pyflakes:
+  run: false
+
+pylint:
+  run: false
+
+mccabe:
+  run: true
+  options:
+    max-complexity: 10
