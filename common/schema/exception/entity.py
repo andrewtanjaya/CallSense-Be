@@ -1,9 +1,5 @@
 from pydantic import BaseModel
 
-# Reference:
-# https://handbook.internal.verihubs.com/doc/error-response-6t8Fht4RsE
-
-
 class ErrorField(BaseModel):
     field: str
     message: str

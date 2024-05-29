@@ -15,7 +15,7 @@ class GetCallsResponse(ListDataBaseResponseModel):
     class Config:
         schema_extra = {
             "example": {
-                "message": "Get notifications successful",
+                "message": "Get calls successful",
                 "data": [
                     CallsResponseModel.Config.schema_extra.get("example")
                 ],

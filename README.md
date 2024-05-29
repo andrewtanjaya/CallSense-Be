@@ -20,7 +20,3 @@ To start developing `Hackathon BI BE Service`, you need to do following steps on
 ## Documentation
 
 [Changelog](CHANGELOG.md)
-
-## Contact
-
-If anything happened, raise the issue at Verihubs - Engineering Slack Channel.

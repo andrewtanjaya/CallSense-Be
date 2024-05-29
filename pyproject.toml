@@ -2,7 +2,7 @@
 name = "hackaton-bi-service"
 version = "1.1.1"
 description = ""
-authors = ["Adrian <adrian@verihubs.com>"]
+authors = ["Adrian <adrianxwijaya@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.8"

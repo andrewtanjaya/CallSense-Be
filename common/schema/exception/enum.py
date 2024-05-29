@@ -1,8 +1,5 @@
 from enum import IntEnum
 
-# Reference:
-# https://handbook.internal.verihubs.com/doc/error-response-6t8Fht4RsE
-
 
 class ErrorCode(IntEnum):
     INVALID_PAYLOAD = 400

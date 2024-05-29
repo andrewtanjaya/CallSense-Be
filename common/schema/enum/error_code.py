@@ -1,8 +1,5 @@
 from enum import Enum
 
-# Reference:
-# https://handbook.internal.verihubs.com/doc/error-response-6t8Fht4RsE
-
 
 class ErrorCode(str, Enum):
     INVALID_PAYLOAD = "400"
