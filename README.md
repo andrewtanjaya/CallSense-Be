@@ -2,7 +2,7 @@
 
 ## Prerequisites
 
-To start the `notification-service`, you need to have the following prerequisites.
+To start the `Hackathon BI BE Service`, you need to have the following prerequisites.
 
 1. [Python 3.8 or later](https://www.python.org/)
 2. [Poetry](https://python-poetry.org/docs/)
