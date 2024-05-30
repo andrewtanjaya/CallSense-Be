@@ -27,10 +27,24 @@ class RecordingAbstractRepository(ABC):
         raise NotImplementedError
 
 
+class FireStoreAbstractExternal(ABC):
+    @abstractmethod
+    def get_collections(self):
+        raise NotImplementedError
+
+
+class FireStorageAbstractExternal(ABC):
+    @abstractmethod
+    def upload(self, file_name: str):
+        raise NotImplementedError
+
+
 class AbstractUnitOfWork(ABC):
     call: CallAbstractRepository
     call_detail: CallDetailAbstractRepository
     recording: RecordingAbstractRepository
+    firestore: FireStoreAbstractExternal
+    firestorage: FireStorageAbstractExternal
 
     def __enter__(self) -> "AbstractUnitOfWork":
         return self

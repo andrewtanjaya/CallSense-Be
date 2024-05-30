@@ -110,3 +110,30 @@ def get_call_recordings(call_id: UUID):
             )
         ],
     )
+
+
+@router.get(
+    "/testing/bro",
+    status_code=200,
+    # responses={
+    #     200: {"model": Mess},
+    #     400: {"model": BadRequestResponse},
+    #     404: {"model": NotFoundResponse},
+    #     500: {"model": InternalServerErrorResponse},
+    # },
+)
+def get_firestore_collections():
+    return call_service.upload_file_to_firestorage(
+        SQLAlchemyUnitOfWork(), "ganteng.png"
+    )
+    # return call_service.get_firestore_collections(
+    #     SQLAlchemyUnitOfWork()
+    # )
+    # return GetRecordingsResponse(
+    #     data=[
+    #         RecordingResponseModel(**recording.dict())
+    #         for recording in call_service.get_recordings(
+    #             SQLAlchemyUnitOfWork(), call_id
+    #         )
+    #     ],
+    # )

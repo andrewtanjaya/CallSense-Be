@@ -33,3 +33,13 @@ def get_call_details(
 ) -> List[CallDetail]:
     with uow:
         return uow.call_detail.get_call_details(call_id=call_id)
+
+
+def get_firestore_collections(uow: AbstractUnitOfWork):
+    with uow:
+        return uow.firestore.get_collections()
+
+
+def upload_file_to_firestorage(uow: AbstractUnitOfWork, file_name: str):
+    with uow:
+        return uow.firestorage.upload(file_name)

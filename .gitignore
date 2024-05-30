@@ -186,3 +186,5 @@ deployments/local/database
 
 # local opanapi.json
 openapi.json
+
+credentials.json

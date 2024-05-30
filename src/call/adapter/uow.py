@@ -1,9 +1,14 @@
 from sqlalchemy.orm import scoped_session
 
-from common.dependencies import DB, get_database
+from common.dependencies import DB, get_database, get_firestore, get_storage
 from src.call.adapter.call_detail_repository import (
     CallDetailSqlAlchemyRepository,
 )
+from src.call.adapter.firestorage import (
+    FireStorageAbstractExternal,
+    FireStorageExternal,
+)
+from src.call.adapter.firestore import FirestoreExternal
 from src.call.adapter.recording_repository import RecordingSqlAlchemyRepository
 from src.call.adapter.repository import CallSqlAlchemyRepository
 from src.call.domain.interface import AbstractUnitOfWork
@@ -15,7 +20,10 @@ class SQLAlchemyUnitOfWork(AbstractUnitOfWork):
 
     def __enter__(self):
         self.session = self.session_factory.get_session()
+        self.store = get_firestore()
+        self.storage = get_storage()
         self.set_repository()
+        self.set_external()
         return super().__enter__()
 
     def __exit__(self, *args):
@@ -26,6 +34,10 @@ class SQLAlchemyUnitOfWork(AbstractUnitOfWork):
         self.call = CallSqlAlchemyRepository(self.session)
         self.call_detail = CallDetailSqlAlchemyRepository(self.session)
         self.recording = RecordingSqlAlchemyRepository(self.session)
+
+    def set_external(self):
+        self.firestore = FirestoreExternal(self.store)
+        self.firestorage = FireStorageExternal(self.storage)
 
     def commit(self):
         self.session.commit()
@@ -42,6 +54,7 @@ class SessionUnitOfWork(AbstractUnitOfWork):
 
     def __init__(self, session: scoped_session):
         self.session = session
+        self.firestore = get_firestore()
         self.set_repository()
 
     def __enter__(self):
