@@ -1,11 +1,11 @@
 from datetime import datetime
-from typing import Optional
+from typing import List, Optional
 from uuid import UUID
 
 from pydantic import BaseModel
 
 
-class CallsResponseModel(BaseModel):
+class CallResponseModel(BaseModel):
     id: UUID
     agent_name: str
     sentiment: float
@@ -43,6 +43,27 @@ class CallDetailResponseModel(BaseModel):
                 "started_at": "2023-03-17 09:47:38.767317",
                 "ended_at": "2023-03-17 10:47:38.767317",
                 "created_at": "2023-03-17 10:47:38.767317",
+            }
+        }
+
+
+class EndedCallResponseModel(CallResponseModel):
+    total_calls: int
+    details: Optional[List[CallDetailResponseModel]]
+
+    class Config:
+        schema_extra = {
+            "example": {
+                "id": "51e94932-6f65-4dd2-9687-0584dbc3996c",
+                "agent_name": "quota-service",
+                "sentiment": "0.9",
+                "total_calls": 10,
+                "started_at": "2023-03-17 09:47:38.767317",
+                "ended_at": "2023-03-17 10:47:38.767317",
+                "created_at": "2023-03-17 10:47:38.767317",
+                "details": [
+                    CallDetailResponseModel.Config.schema_extra.get("example")
+                ],
             }
         }
 

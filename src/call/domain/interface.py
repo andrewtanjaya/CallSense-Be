@@ -2,12 +2,12 @@ from abc import ABC, abstractmethod
 from typing import List
 from uuid import UUID
 
-from src.call.domain.entity import Call, CallDetail, Recording
+from src.call.domain.entity import Call, CallDetail, EndedCall, Recording
 
 
 class CallAbstractRepository(ABC):
     @abstractmethod
-    def get_ended_calls(self) -> List[Call]:
+    def get_ended_calls(self) -> List[EndedCall]:
         raise NotImplementedError
 
     @abstractmethod

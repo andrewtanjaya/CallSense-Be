@@ -1,2 +1,2 @@
 # flake8: noqa
-from .call import CallsResponseModel
+from .call import CallResponseModel

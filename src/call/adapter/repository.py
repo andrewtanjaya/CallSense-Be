@@ -1,9 +1,9 @@
 from typing import List, Optional
 
-from sqlalchemy import desc
+from sqlalchemy import desc, func
 
-from common.orm.call import CallSQl
-from src.call.domain.entity import Call
+from common.orm import CallDetailSQL, CallSQl
+from src.call.domain.entity import Call, EndedCall
 from src.call.domain.interface import CallAbstractRepository
 
 
@@ -24,28 +24,29 @@ class CallSqlAlchemyRepository(CallAbstractRepository):
 
     def get_ended_calls(
         self,
-    ) -> List[Call]:
-        return [
-            self._model_to_entity(call)
-            for call in self.session.query(CallSQl)
-            .filter(CallSQl.ended_at.isnot(None))
+    ) -> List[EndedCall]:
+        query = (
+            self.session.query(
+                CallSQl,
+                func.count(CallDetailSQL.id).label("total_calls"),
+            )
+            .outerjoin(CallDetailSQL, CallSQl.id == CallDetailSQL.call_id)
+            .where(CallSQl.ended_at.isnot(None))
             .order_by(desc(CallSQl.created_at))
-            .all()
-        ]
+            .group_by(
+                CallSQl.id,
+                CallSQl.agent_name,
+                CallSQl.sentiment,
+                CallSQl.created_at,
+                CallSQl.started_at,
+                CallSQl.ended_at,
+            )
+        )
 
-    # query = (
-    #     select([
-    #         call.c.id,
-    #         call.c.agent_name,
-    #         call.c.sentiment,
-    #         call.c.created_at,
-    #         call.c.started_at,
-    #         call.c.ended_at,
-    #         func.count(call_detail.c.id).label('call_detail_count')
-    #     ])
-    #     .select_from(call.outerjoin(call_detail, call.c.id == call_detail.c.call_id))
-    #     .group_by(call.c.id)
-    # )
+        return [
+            self._model_to_ended_entity(call, total_count)
+            for call, total_count in query.all()
+        ]
 
     def get_ongoing_calls(
         self,
@@ -65,3 +66,10 @@ class CallSqlAlchemyRepository(CallAbstractRepository):
         if not call:
             return None
         return Call(**call.__dict__)
+
+    def _model_to_ended_entity(
+        self, call: CallSQl, total_calls: Optional[int] = None
+    ) -> Optional[EndedCall]:
+        if not call:
+            return None
+        return EndedCall(**call.__dict__, total_calls=total_calls)

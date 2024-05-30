@@ -11,9 +11,11 @@ from common.schema.exception.response import (
 from src.call.adapter.uow import SQLAlchemyUnitOfWork
 from src.call.http.call.schema.response import (
     CallDetailResponseModel,
-    CallsResponseModel,
+    CallResponseModel,
+    EndedCallResponseModel,
     GetCallDetailsResponse,
-    GetCallsResponse,
+    GetEndedCalls,
+    GetOngoingCalls,
     GetRecordingsResponse,
     RecordingResponseModel,
 )
@@ -31,7 +33,7 @@ router = APIRouter(
     "/ended",
     status_code=200,
     responses={
-        200: {"model": GetCallsResponse},
+        200: {"model": GetEndedCalls},
         400: {"model": BadRequestResponse},
         404: {"model": NotFoundResponse},
         500: {"model": InternalServerErrorResponse},
@@ -40,9 +42,10 @@ router = APIRouter(
 def get_all_ended_calls():
     calls = call_service.get_ended_calls(SQLAlchemyUnitOfWork())
 
-    return GetCallsResponse(
+    return GetEndedCalls(
         data=[
-            CallsResponseModel(**call_entity.dict()) for call_entity in calls
+            EndedCallResponseModel(**call_entity.dict())
+            for call_entity in calls
         ],
     )
 
@@ -51,7 +54,7 @@ def get_all_ended_calls():
     "/ongoing",
     status_code=200,
     responses={
-        200: {"model": GetCallsResponse},
+        200: {"model": GetOngoingCalls},
         400: {"model": BadRequestResponse},
         404: {"model": NotFoundResponse},
         500: {"model": InternalServerErrorResponse},
@@ -60,9 +63,9 @@ def get_all_ended_calls():
 def get_all_ongoing_calls():
     calls = call_service.get_ongoing_calls(SQLAlchemyUnitOfWork())
 
-    return GetCallsResponse(
+    return GetOngoingCalls(
         data=[
-            CallsResponseModel(**call_entity.dict()) for call_entity in calls
+            CallResponseModel(**call_entity.dict()) for call_entity in calls
         ],
     )
 

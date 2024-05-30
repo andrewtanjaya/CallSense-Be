@@ -12,6 +12,7 @@ class Call(BaseModel):
     started_at: Optional[datetime]
     ended_at: Optional[datetime]
     created_at: Optional[datetime] = Field(default_factory=datetime.utcnow())
+    total_calls: Optional[int] = 0
 
 
 class CallDetail(BaseModel):
@@ -21,6 +22,11 @@ class CallDetail(BaseModel):
     started_at: Optional[datetime]
     ended_at: Optional[datetime]
     created_at: Optional[datetime] = Field(default_factory=datetime.utcnow())
+
+
+class EndedCall(Call):
+    total_calls: int
+    details: Optional[List[CallDetail]]
 
 
 class Recording(BaseModel):

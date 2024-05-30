@@ -3,21 +3,35 @@ from typing import Any
 from common.schema.base.response import ListDataBaseResponseModel
 from src.call.http.call.schema.model.call import (
     CallDetailResponseModel,
-    CallsResponseModel,
+    CallResponseModel,
+    EndedCallResponseModel,
     RecordingResponseModel,
 )
 
 
-class GetCallsResponse(ListDataBaseResponseModel):
+class GetOngoingCalls(ListDataBaseResponseModel):
     def __init__(self, **data: Any) -> None:
-        super().__init__(**data, message="Get calls successful")
+        super().__init__(**data, message="Get ongoing calls successful")
 
     class Config:
         schema_extra = {
             "example": {
-                "message": "Get calls successful",
+                "message": "Get ongoing calls successful",
+                "data": [CallResponseModel.Config.schema_extra.get("example")],
+            }
+        }
+
+
+class GetEndedCalls(ListDataBaseResponseModel):
+    def __init__(self, **data: Any) -> None:
+        super().__init__(**data, message="Get ended calls successful")
+
+    class Config:
+        schema_extra = {
+            "example": {
+                "message": "Get ended calls successful",
                 "data": [
-                    CallsResponseModel.Config.schema_extra.get("example")
+                    EndedCallResponseModel.Config.schema_extra.get("example")
                 ],
             }
         }
