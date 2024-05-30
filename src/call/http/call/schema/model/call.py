@@ -17,7 +17,7 @@ class CallResponseModel(BaseModel):
         schema_extra = {
             "example": {
                 "id": "51e94932-6f65-4dd2-9687-0584dbc3996c",
-                "agent_name": "quota-service",
+                "agent_name": "Agent 2",
                 "sentiment": "0.9",
                 "started_at": "2023-03-17 09:47:38.767317",
                 "ended_at": "2023-03-17 10:47:38.767317",
@@ -38,7 +38,7 @@ class CallDetailResponseModel(BaseModel):
         schema_extra = {
             "example": {
                 "id": "51e94932-6f65-4dd2-9687-0584dbc3996c",
-                "agent_name": "quota-service",
+                "agent_name": "Agent 2",
                 "sentiment": "0.9",
                 "started_at": "2023-03-17 09:47:38.767317",
                 "ended_at": "2023-03-17 10:47:38.767317",
@@ -55,7 +55,7 @@ class EndedCallResponseModel(CallResponseModel):
         schema_extra = {
             "example": {
                 "id": "51e94932-6f65-4dd2-9687-0584dbc3996c",
-                "agent_name": "quota-service",
+                "agent_name": "Agent 2",
                 "sentiment": "0.9",
                 "total_calls": 10,
                 "started_at": "2023-03-17 09:47:38.767317",
