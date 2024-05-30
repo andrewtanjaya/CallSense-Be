@@ -71,7 +71,7 @@ def get_all_ongoing_calls():
 
 
 @router.get(
-    "/{call_id}",
+    "/{call_id}/details",
     status_code=200,
     responses={
         200: {"model": GetCallDetailsResponse},
