@@ -1,9 +1,7 @@
 import firebase_admin
-import google.cloud
-from firebase_admin import credentials, firestore, initialize_app, storage
+from firebase_admin import credentials, firestore,  storage
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
-
 from common.config import (
     DATABASE_URL,
     ENGINE_IMPLICIT_RETURNING,
@@ -12,6 +10,7 @@ from common.config import (
     ENGINE_POOL_SIZE,
     ENGINE_POOL_USE_LIFO,
     GOOGLE_APPLICATION_CREDENTIALS,
+    FIREBASE_STORAGE_BUCKET
 )
 
 
@@ -55,11 +54,10 @@ db_service = DB(
 def get_database():
     return db_service
 
-
 ## GOOGLE
 cred = credentials.Certificate(GOOGLE_APPLICATION_CREDENTIALS)
 app = firebase_admin.initialize_app(
-    cred, {"storageBucket": "hackathonbisentiment-59be0.appspot.com"}
+    cred, {"storageBucket": FIREBASE_STORAGE_BUCKET}
 )
 
 store = firestore.client()
@@ -71,8 +69,3 @@ def get_firestore():
 
 def get_storage():
     return storage.bucket()
-
-
-# initialize_app(
-#     cred, {"storageBucket": "hackathonbisentiment-59be0.appspot.com"}
-# )
