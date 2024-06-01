@@ -129,6 +129,7 @@ def get_firestore_collections():
     )
     return SuccessResponse(message="File uploaded successfully")
 
+
 @router.delete(
     "/{call_id}",
     status_code=204,

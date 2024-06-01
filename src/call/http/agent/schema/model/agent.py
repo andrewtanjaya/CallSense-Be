@@ -37,8 +37,9 @@ class AgentResponseModel(BaseModel):
                 "total_calls": "5",
                 "average_sentiment": "0.9",
                 "calls": [
-                    AgentEndedCallResponseModel.Config.schema_extra.get("example")
+                    AgentEndedCallResponseModel.Config.schema_extra.get(
+                        "example"
+                    )
                 ],
             }
         }
-

@@ -8,7 +8,7 @@ from pydantic import BaseModel, EmailStr, Field
 class Call(BaseModel):
     id: Optional[UUID] = Field(default_factory=uuid4)
     agent_name: str
-    sentiment: float
+    sentiment: Optional[float] = 0.0
     started_at: Optional[datetime]
     ended_at: Optional[datetime]
     created_at: Optional[datetime] = Field(default_factory=datetime.utcnow)
@@ -17,7 +17,7 @@ class Call(BaseModel):
 class CallDetail(BaseModel):
     id: Optional[UUID] = Field(default_factory=uuid4)
     call_id: UUID
-    sentiment: float
+    sentiment: Optional[float] = 0.0
     started_at: Optional[datetime]
     ended_at: Optional[datetime]
     created_at: Optional[datetime] = Field(default_factory=datetime.utcnow)

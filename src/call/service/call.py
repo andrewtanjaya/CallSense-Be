@@ -2,9 +2,9 @@ from datetime import datetime
 from typing import List
 from uuid import UUID
 
+from common.exception import NotFoundError
 from src.call.domain.entity import Call, CallDetail, EndedCall, Recording
 from src.call.domain.interface import AbstractUnitOfWork
-from common.exception import NotFoundError
 
 
 def get_ended_calls(
@@ -52,15 +52,18 @@ def create_call(uow: AbstractUnitOfWork, call: Call):
         uow.call.create(call)
         uow.commit()
 
+
 def bulk_create_calls(uow: AbstractUnitOfWork, calls: List[Call]):
     with uow:
         uow.call.bulk_create(calls)
         uow.commit()
 
+
 def update_call(uow: AbstractUnitOfWork, call: Call):
     with uow:
         uow.call.update(call)
         uow.commit()
+
 
 def delete_call(uow: AbstractUnitOfWork, id: UUID):
     with uow:
@@ -76,7 +79,6 @@ def initiate_call(
         uow.call.create(
             Call(
                 agent_name=agent_name,
-                sentiment=0.0,
                 started_at=datetime.utcnow(),
             )
         )
