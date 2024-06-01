@@ -24,6 +24,7 @@ class CallSqlAlchemyRepository(CallAbstractRepository):
 
     def get_ended_calls(
         self,
+        agent_name: Optional[str] = None
     ) -> List[EndedCall]:
         query = (
             self.session.query(
@@ -42,6 +43,9 @@ class CallSqlAlchemyRepository(CallAbstractRepository):
                 CallSQl.ended_at,
             )
         )
+
+        if agent_name:
+            query = query.where(CallSQl.agent_name == agent_name)
 
         return [
             self._model_to_ended_entity(call, total_count)

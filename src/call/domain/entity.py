@@ -34,3 +34,10 @@ class Recording(BaseModel):
     call_id: UUID
     url: str
     created_at: Optional[datetime] = Field(default_factory=datetime.utcnow())
+
+
+class Agent(BaseModel):
+    agent_name: str
+    total_calls: int
+    average_sentiment: float
+    calls: Optional[List[Call]]

@@ -11,6 +11,7 @@ from src.call.adapter.firestorage import (
 from src.call.adapter.firestore import FirestoreExternal
 from src.call.adapter.recording_repository import RecordingSqlAlchemyRepository
 from src.call.adapter.repository import CallSqlAlchemyRepository
+from src.call.adapter.agent_repository import AgentSqlAlchemyRepository
 from src.call.domain.interface import AbstractUnitOfWork
 
 
@@ -34,6 +35,7 @@ class SQLAlchemyUnitOfWork(AbstractUnitOfWork):
         self.call = CallSqlAlchemyRepository(self.session)
         self.call_detail = CallDetailSqlAlchemyRepository(self.session)
         self.recording = RecordingSqlAlchemyRepository(self.session)
+        self.agent = AgentSqlAlchemyRepository(self.session)
 
     def set_external(self):
         self.firestore = FirestoreExternal(self.store)
@@ -67,6 +69,7 @@ class SessionUnitOfWork(AbstractUnitOfWork):
         self.call = CallSqlAlchemyRepository(self.session)
         self.call_detail = CallDetailSqlAlchemyRepository(self.session)
         self.recording = RecordingSqlAlchemyRepository(self.session)
+        self.agent = AgentSqlAlchemyRepository(self.session)
 
     def commit(self):
         pass

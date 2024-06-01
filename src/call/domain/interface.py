@@ -1,13 +1,12 @@
 from abc import ABC, abstractmethod
-from typing import List
+from typing import List, Optional
 from uuid import UUID
 
-from src.call.domain.entity import Call, CallDetail, EndedCall, Recording
-
+from src.call.domain.entity import Call, CallDetail, EndedCall, Recording, Agent
 
 class CallAbstractRepository(ABC):
     @abstractmethod
-    def get_ended_calls(self) -> List[EndedCall]:
+    def get_ended_calls(self, agent_name: Optional[str] = None) -> List[EndedCall]:
         raise NotImplementedError
 
     @abstractmethod
@@ -26,6 +25,10 @@ class RecordingAbstractRepository(ABC):
     def get_recordings(self, call_id) -> List[Recording]:
         raise NotImplementedError
 
+class AgentAbstractRepository(ABC):
+    @abstractmethod
+    def get_agents(self) -> List[Agent]:
+        raise NotImplementedError
 
 class FireStoreAbstractExternal(ABC):
     @abstractmethod
@@ -45,6 +48,7 @@ class AbstractUnitOfWork(ABC):
     recording: RecordingAbstractRepository
     firestore: FireStoreAbstractExternal
     firestorage: FireStorageAbstractExternal
+    agent: AgentAbstractRepository
 
     def __enter__(self) -> "AbstractUnitOfWork":
         return self
