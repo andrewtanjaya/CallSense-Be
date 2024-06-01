@@ -1,5 +1,6 @@
 from fastapi.responses import ORJSONResponse
 from fastapi.routing import APIRouter
+from fastapi import BackgroundTasks
 
 from common.schema.base.response import CreatedResponse, SuccessResponse
 from common.schema.exception.response import (
@@ -13,8 +14,7 @@ from src.call.http.agent.schema import (
     GetAgents,
     InitiateCallRequest,
 )
-from src.call.service import agent as agent_service
-from src.call.service import call as call_service
+from src.call.service import call as call_service, agent as agent_service, recording as recording_service
 
 router = APIRouter(
     default_response_class=ORJSONResponse,
@@ -55,9 +55,17 @@ def get_all_agents():
         500: {"model": InternalServerErrorResponse},
     },
 )
-def initiate_call(agent_name: str, request: InitiateCallRequest):
+def initiate_call(agent_name: str, request: InitiateCallRequest, background_tasks: BackgroundTasks):
     call_service.initiate_call(
         SQLAlchemyUnitOfWork(), agent_name, request.streaming_url
+    )
+    background_tasks.add_task(
+        recording_service.stream_audio_and_save_in_chunks,
+        SQLAlchemyUnitOfWork(),
+        request.streaming_url,
+        "mp3",
+        "wav",
+        10,
     )
     return CreatedResponse(message="Call initiated successfully")
 
