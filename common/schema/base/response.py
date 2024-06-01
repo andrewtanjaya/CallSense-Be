@@ -45,6 +45,19 @@ class SuccessResponse(BaseResponse):
         }
 
 
+class CreatedResponse(BaseResponse):
+    def __init__(self, **data: Any) -> None:
+        super().__init__(**data)
+        self.message = data.get("message") or HTTPStatus.CREATED.description
+
+    class Config(BaseResponse.Config):
+        schema_extra = {
+            "example": {
+                "message": "created message",
+            }
+        }
+
+
 class ListBaseResponse(BaseResponse):
     data: Optional[ListDataBaseResponseModel] = {}
 

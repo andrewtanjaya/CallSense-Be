@@ -3,6 +3,7 @@ from uuid import UUID
 from fastapi.responses import ORJSONResponse
 from fastapi.routing import APIRouter
 
+from common.schema.base.response import SuccessResponse
 from common.schema.exception.response import (
     BadRequestResponse,
     InternalServerErrorResponse,
@@ -113,27 +114,29 @@ def get_call_recordings(call_id: UUID):
 
 
 @router.get(
-    "/testing/bro",
+    "/upload",
     status_code=200,
-    # responses={
-    #     200: {"model": Mess},
-    #     400: {"model": BadRequestResponse},
-    #     404: {"model": NotFoundResponse},
-    #     500: {"model": InternalServerErrorResponse},
-    # },
+    responses={
+        200: {"model": SuccessResponse},
+        400: {"model": BadRequestResponse},
+        404: {"model": NotFoundResponse},
+        500: {"model": InternalServerErrorResponse},
+    },
 )
 def get_firestore_collections():
-    return call_service.upload_file_to_firestorage(
+    call_service.upload_file_to_firestorage(
         SQLAlchemyUnitOfWork(), "ganteng.png"
     )
-    # return call_service.get_firestore_collections(
-    #     SQLAlchemyUnitOfWork()
-    # )
-    # return GetRecordingsResponse(
-    #     data=[
-    #         RecordingResponseModel(**recording.dict())
-    #         for recording in call_service.get_recordings(
-    #             SQLAlchemyUnitOfWork(), call_id
-    #         )
-    #     ],
-    # )
+    return SuccessResponse(message="File uploaded successfully")
+
+@router.delete(
+    "/{call_id}",
+    status_code=204,
+    responses={
+        400: {"model": BadRequestResponse},
+        404: {"model": NotFoundResponse},
+        500: {"model": InternalServerErrorResponse},
+    },
+)
+def delete_call(call_id: UUID):
+    call_service.delete_call(SQLAlchemyUnitOfWork(), call_id)

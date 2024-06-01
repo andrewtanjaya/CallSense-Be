@@ -1,6 +1,7 @@
 from sqlalchemy.orm import scoped_session
 
 from common.dependencies import DB, get_database, get_firestore, get_storage
+from src.call.adapter.agent_repository import AgentSqlAlchemyRepository
 from src.call.adapter.call_detail_repository import (
     CallDetailSqlAlchemyRepository,
 )
@@ -11,7 +12,6 @@ from src.call.adapter.firestorage import (
 from src.call.adapter.firestore import FirestoreExternal
 from src.call.adapter.recording_repository import RecordingSqlAlchemyRepository
 from src.call.adapter.repository import CallSqlAlchemyRepository
-from src.call.adapter.agent_repository import AgentSqlAlchemyRepository
 from src.call.domain.interface import AbstractUnitOfWork
 
 

@@ -6,7 +6,7 @@ from sqlalchemy.dialects.postgresql import UUID
 from common.orm.base import Base
 
 
-class CallSQl(Base):
+class CallSQL(Base):
     __tablename__ = "calls"
     id = Column(
         UUID(as_uuid=True),

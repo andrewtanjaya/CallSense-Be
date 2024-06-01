@@ -1,16 +1,50 @@
 from abc import ABC, abstractmethod
+from datetime import datetime
 from typing import List, Optional
 from uuid import UUID
 
-from src.call.domain.entity import Call, CallDetail, EndedCall, Recording, Agent
+from src.call.domain.entity import (
+    Agent,
+    Call,
+    CallDetail,
+    EndedCall,
+    Recording,
+)
+
 
 class CallAbstractRepository(ABC):
     @abstractmethod
-    def get_ended_calls(self, agent_name: Optional[str] = None) -> List[EndedCall]:
+    def get_ended_calls(
+        self, agent_name: Optional[str] = None
+    ) -> List[EndedCall]:
         raise NotImplementedError
 
     @abstractmethod
     def get_ongoing_calls(self) -> List[Call]:
+        raise NotImplementedError
+
+    @abstractmethod
+    def get_latest_ongoing_call(self, agent_name: str) -> Call:
+        raise NotImplementedError
+
+    @abstractmethod
+    def create(self, call: Call) -> None:
+        raise NotImplementedError
+
+    @abstractmethod
+    def bulk_create(self, calls: List[Call]) -> None:
+        raise NotImplementedError
+
+    @abstractmethod
+    def update(self, call: Call) -> None:
+        raise NotImplementedError
+
+    @abstractmethod
+    def delete(self, id: UUID) -> None:
+        raise NotImplementedError
+
+    @abstractmethod
+    def end(self, id: UUID) -> None:
         raise NotImplementedError
 
 
@@ -25,10 +59,12 @@ class RecordingAbstractRepository(ABC):
     def get_recordings(self, call_id) -> List[Recording]:
         raise NotImplementedError
 
+
 class AgentAbstractRepository(ABC):
     @abstractmethod
     def get_agents(self) -> List[Agent]:
         raise NotImplementedError
+
 
 class FireStoreAbstractExternal(ABC):
     @abstractmethod

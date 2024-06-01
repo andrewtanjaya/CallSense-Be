@@ -1,8 +1,10 @@
+from datetime import datetime
 from typing import List
 from uuid import UUID
 
 from src.call.domain.entity import Call, CallDetail, EndedCall, Recording
 from src.call.domain.interface import AbstractUnitOfWork
+from common.exception import NotFoundError
 
 
 def get_ended_calls(
@@ -43,3 +45,50 @@ def get_firestore_collections(uow: AbstractUnitOfWork):
 def upload_file_to_firestorage(uow: AbstractUnitOfWork, file_name: str):
     with uow:
         return uow.firestorage.upload(file_name)
+
+
+def create_call(uow: AbstractUnitOfWork, call: Call):
+    with uow:
+        uow.call.create(call)
+        uow.commit()
+
+def bulk_create_calls(uow: AbstractUnitOfWork, calls: List[Call]):
+    with uow:
+        uow.call.bulk_create(calls)
+        uow.commit()
+
+def update_call(uow: AbstractUnitOfWork, call: Call):
+    with uow:
+        uow.call.update(call)
+        uow.commit()
+
+def delete_call(uow: AbstractUnitOfWork, id: UUID):
+    with uow:
+        uow.call.delete(id)
+        uow.commit()
+
+
+def initiate_call(
+    uow: AbstractUnitOfWork, agent_name: str, streaming_url: str
+):
+    with uow:
+        # invoke a function to capture the streaming_url then extract it into files
+        uow.call.create(
+            Call(
+                agent_name=agent_name,
+                sentiment=0.0,
+                started_at=datetime.utcnow(),
+            )
+        )
+        uow.commit()
+
+
+def end_call(uow: AbstractUnitOfWork, agent_name: str):
+    with uow:
+        # trigger combinator recording files then upload to firestore
+        latest_call = uow.call.get_latest_ongoing_call(agent_name)
+        if not latest_call:
+            raise NotFoundError(message="No ongoing call found")
+
+        uow.call.end(latest_call.id)
+        uow.commit()

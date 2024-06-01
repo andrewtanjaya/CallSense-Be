@@ -11,8 +11,7 @@ class Call(BaseModel):
     sentiment: float
     started_at: Optional[datetime]
     ended_at: Optional[datetime]
-    created_at: Optional[datetime] = Field(default_factory=datetime.utcnow())
-    total_calls: Optional[int] = 0
+    created_at: Optional[datetime] = Field(default_factory=datetime.utcnow)
 
 
 class CallDetail(BaseModel):
@@ -21,7 +20,7 @@ class CallDetail(BaseModel):
     sentiment: float
     started_at: Optional[datetime]
     ended_at: Optional[datetime]
-    created_at: Optional[datetime] = Field(default_factory=datetime.utcnow())
+    created_at: Optional[datetime] = Field(default_factory=datetime.utcnow)
 
 
 class EndedCall(Call):

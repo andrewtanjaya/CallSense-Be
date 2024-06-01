@@ -1,17 +1,20 @@
 from fastapi.responses import ORJSONResponse
 from fastapi.routing import APIRouter
 
+from common.schema.base.response import CreatedResponse, SuccessResponse
 from common.schema.exception.response import (
     BadRequestResponse,
     InternalServerErrorResponse,
     NotFoundResponse,
 )
 from src.call.adapter.uow import SQLAlchemyUnitOfWork
-from src.call.http.agent.schema.response import (
+from src.call.http.agent.schema import (
+    AgentResponseModel,
     GetAgents,
-    AgentResponseModel
+    InitiateCallRequest,
 )
 from src.call.service import agent as agent_service
+from src.call.service import call as call_service
 
 router = APIRouter(
     default_response_class=ORJSONResponse,
@@ -40,3 +43,35 @@ def get_all_agents():
             for agent_entity in agents
         ],
     )
+
+
+@router.post(
+    "/{agent_name}/calls",
+    status_code=201,
+    responses={
+        201: {"model": CreatedResponse},
+        400: {"model": BadRequestResponse},
+        404: {"model": NotFoundResponse},
+        500: {"model": InternalServerErrorResponse},
+    },
+)
+def initiate_call(agent_name: str, request: InitiateCallRequest):
+    call_service.initiate_call(
+        SQLAlchemyUnitOfWork(), agent_name, request.streaming_url
+    )
+    return CreatedResponse(message="Call initiated successfully")
+
+
+@router.put(
+    "/{agent_name}/calls/ends",
+    status_code=204,
+    responses={
+        200: {"model": SuccessResponse},
+        400: {"model": BadRequestResponse},
+        404: {"model": NotFoundResponse},
+        500: {"model": InternalServerErrorResponse},
+    },
+)
+def end_call(agent_name: str):
+    call_service.end_call(SQLAlchemyUnitOfWork(), agent_name)
+    return SuccessResponse(message="Latest ongoing call ended successfully")
