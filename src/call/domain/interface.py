@@ -9,6 +9,7 @@ from src.call.domain.entity import (
     CallDetail,
     EndedCall,
     Recording,
+    OngoingCall
 )
 
 
@@ -20,7 +21,7 @@ class CallAbstractRepository(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def get_ongoing_calls(self) -> List[Call]:
+    def get_ongoing_calls(self) -> List[OngoingCall]:
         raise NotImplementedError
 
     @abstractmethod
@@ -51,6 +52,10 @@ class CallAbstractRepository(ABC):
 class CallDetailAbstractRepository(ABC):
     @abstractmethod
     def get_call_details(self, call_id: UUID) -> List[CallDetail]:
+        raise NotImplementedError
+    
+    @abstractmethod
+    def get_latest_call_detail(self, call_id: UUID) -> Call:
         raise NotImplementedError
 
 

@@ -6,6 +6,7 @@ from src.call.http.call.schema.model.call import (
     CallResponseModel,
     EndedCallResponseModel,
     RecordingResponseModel,
+    OngoingCallResponseModel
 )
 
 
@@ -17,7 +18,7 @@ class GetOngoingCalls(ListDataBaseResponseModel):
         schema_extra = {
             "example": {
                 "message": "Get ongoing calls successful",
-                "data": [CallResponseModel.Config.schema_extra.get("example")],
+                "data": [OngoingCallResponseModel.Config.schema_extra.get("example")],
             }
         }
 

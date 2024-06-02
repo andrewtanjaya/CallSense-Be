@@ -28,6 +28,10 @@ class EndedCall(Call):
     details: Optional[List[CallDetail]]
 
 
+class OngoingCall(Call):
+    latest_call_detail: Optional[CallDetail]
+
+
 class Recording(BaseModel):
     id: Optional[UUID] = Field(default_factory=uuid4)
     call_id: UUID

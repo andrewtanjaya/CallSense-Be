@@ -5,7 +5,7 @@ from uuid import UUID
 from sqlalchemy import desc, func, update
 
 from common.orm import CallDetailSQL, CallSQL
-from src.call.domain.entity import Call, EndedCall
+from src.call.domain.entity import Call, EndedCall, OngoingCall
 from src.call.domain.interface import CallAbstractRepository
 
 
@@ -69,31 +69,31 @@ class CallSqlAlchemyRepository(CallAbstractRepository):
 
     def get_ongoing_calls(
         self,
-    ) -> List[Call]:
+    ) -> List[OngoingCall]:
         return [
-            self._model_to_entity(call)
+            self._model_to_ongoing_entity(call)
             for call in self.session.query(CallSQL)
             .filter_by(ended_at=None)
             .order_by(desc(CallSQL.created_at))
             .all()
         ]
 
-    def get_latest_ongoing_call(self, agent_name: str) -> Optional[Call]:
+    def get_latest_ongoing_call(self, agent_name: str) -> Optional[OngoingCall]:
         call = (
             self.session.query(CallSQL)
             .filter_by(ended_at=None, agent_name=agent_name)
             .order_by(desc(CallSQL.created_at))
             .first()
         )
-        return self._model_to_entity(call)
+        return self._model_to_ongoing_entity(call)
 
     def _entity_to_model(self, call: Call) -> CallSQL:
         return CallSQL(**call.dict())
 
-    def _model_to_entity(self, call: CallSQL) -> Optional[Call]:
+    def _model_to_ongoing_entity(self, call: CallSQL) -> Optional[OngoingCall]:
         if not call:
             return None
-        return Call(**call.__dict__)
+        return OngoingCall(**call.__dict__)
 
     def _model_to_ended_entity(
         self, call: CallSQL, total_calls: Optional[int] = None

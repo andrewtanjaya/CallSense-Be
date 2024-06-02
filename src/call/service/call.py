@@ -3,7 +3,7 @@ from typing import List
 from uuid import UUID
 
 from common.exception import NotFoundError
-from src.call.domain.entity import Call, CallDetail, EndedCall, Recording
+from src.call.domain.entity import Call, CallDetail, EndedCall, Recording, OngoingCall
 from src.call.domain.interface import AbstractUnitOfWork
 
 
@@ -20,9 +20,14 @@ def get_ended_calls(
 
 def get_ongoing_calls(
     uow: AbstractUnitOfWork,
-) -> List[Call]:
+) -> List[OngoingCall]:
     with uow:
-        return uow.call.get_ongoing_calls()
+        ongoing_calls = uow.call.get_ongoing_calls()
+
+        for call in ongoing_calls:
+            call.latest_call_detail = uow.call_detail.get_latest_call_detail(call.id)
+
+        return ongoing_calls
 
 
 def get_recordings(uow: AbstractUnitOfWork, call_id: UUID) -> List[Recording]:

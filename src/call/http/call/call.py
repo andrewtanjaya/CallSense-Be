@@ -19,6 +19,7 @@ from src.call.http.call.schema.response import (
     GetOngoingCalls,
     GetRecordingsResponse,
     RecordingResponseModel,
+    OngoingCallResponseModel
 )
 from src.call.service import call as call_service
 
@@ -66,7 +67,7 @@ def get_all_ongoing_calls():
 
     return GetOngoingCalls(
         data=[
-            CallResponseModel(**call_entity.dict()) for call_entity in calls
+            OngoingCallResponseModel(**call_entity.dict()) for call_entity in calls
         ],
     )
 
