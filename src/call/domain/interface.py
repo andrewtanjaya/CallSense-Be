@@ -51,6 +51,10 @@ class CallAbstractRepository(ABC):
 
 class CallDetailAbstractRepository(ABC):
     @abstractmethod
+    def create(self, call_detail: CallDetail) -> CallDetail:
+        raise NotImplementedError
+
+    @abstractmethod
     def get_call_details(self, call_id: UUID) -> List[CallDetail]:
         raise NotImplementedError
 

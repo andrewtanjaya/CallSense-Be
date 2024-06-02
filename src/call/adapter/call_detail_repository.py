@@ -12,6 +12,9 @@ class CallDetailSqlAlchemyRepository(CallDetailAbstractRepository):
     def __init__(self, session) -> None:
         self.session = session
 
+    def create(self, call_detail: CallDetail):
+        self.session.add(self._entity_to_model(call_detail))
+
     def get_call_details(self, call_id: UUID) -> List[CallDetail]:
         return [
             self._model_to_entity(call)

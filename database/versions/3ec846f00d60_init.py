@@ -1,8 +1,8 @@
 """init
 
-Revision ID: 48e4234ecfd0
+Revision ID: 3ec846f00d60
 Revises: 
-Create Date: 2024-05-30 00:45:36.650816
+Create Date: 2024-06-03 00:08:05.928921
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision = '48e4234ecfd0'
+revision = '3ec846f00d60'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -22,8 +22,8 @@ def upgrade():
     sa.Column('id', postgresql.UUID(as_uuid=True), nullable=False),
     sa.Column('call_id', postgresql.UUID(as_uuid=True), nullable=False),
     sa.Column('sentiment', sa.Float(), nullable=True),
-    sa.Column('started_at', sa.DateTime(), nullable=True),
-    sa.Column('ended_at', sa.DateTime(), nullable=True),
+    sa.Column('started_at', sa.Integer(), nullable=True),
+    sa.Column('ended_at', sa.Integer(), nullable=True),
     sa.Column('created_at', sa.DateTime(), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
@@ -34,6 +34,8 @@ def upgrade():
     sa.Column('sentiment', sa.Float(), nullable=True),
     sa.Column('started_at', sa.DateTime(), nullable=True),
     sa.Column('ended_at', sa.DateTime(), nullable=True),
+    sa.Column('customer_streaming_url', sa.String(), nullable=True),
+    sa.Column('agent_streaming_url', sa.String(), nullable=True),
     sa.Column('created_at', sa.DateTime(), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )

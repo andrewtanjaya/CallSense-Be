@@ -184,7 +184,9 @@ deployments/local/database
 # Staging db migration
 .env.deploy
 
-# local opanapi.json
+# local opanapi.jsona
 openapi.json
 
 credentials.json
+
+./audio_chunks

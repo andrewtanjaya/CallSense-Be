@@ -12,14 +12,16 @@ class Call(BaseModel):
     started_at: Optional[datetime]
     ended_at: Optional[datetime]
     created_at: Optional[datetime] = Field(default_factory=datetime.utcnow)
+    customer_streaming_url: Optional[str]
+    agent_streaming_url: Optional[str]
 
 
 class CallDetail(BaseModel):
     id: Optional[UUID] = Field(default_factory=uuid4)
     call_id: UUID
     sentiment: Optional[float] = 0.0
-    started_at: Optional[datetime]
-    ended_at: Optional[datetime]
+    started_at: Optional[int]
+    ended_at: Optional[int]
     created_at: Optional[datetime] = Field(default_factory=datetime.utcnow)
 
 

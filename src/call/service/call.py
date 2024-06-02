@@ -1,6 +1,6 @@
 from datetime import datetime
 from typing import List
-from uuid import UUID
+from uuid import UUID, uuid4
 
 from common.exception import NotFoundError
 from src.call.domain.entity import (
@@ -85,17 +85,23 @@ def delete_call(uow: AbstractUnitOfWork, id: UUID):
 
 
 def initiate_call(
-    uow: AbstractUnitOfWork, agent_name: str, streaming_url: str
-):
+    uow: AbstractUnitOfWork,
+    agent_name: str,
+    customer_streaming_url: str,
+    agent_streaming_url: str,
+) -> UUID:
     with uow:
-        # invoke a function to capture the streaming_url then extract it into files
-        uow.call.create(
-            Call(
-                agent_name=agent_name,
-                started_at=datetime.utcnow(),
-            )
+        new_call = Call(
+            id=uuid4(),
+            agent_name=agent_name,
+            started_at=datetime.utcnow(),
+            customer_streaming_url=customer_streaming_url,
+            agent_streaming_url=agent_streaming_url,
         )
+        uow.call.create(new_call)
         uow.commit()
+
+    return new_call.id
 
 
 def end_call(uow: AbstractUnitOfWork, agent_name: str):

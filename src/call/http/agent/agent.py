@@ -62,12 +62,16 @@ def start_call(
     request: InitiateCallRequest,
     background_tasks: BackgroundTasks,
 ):
-    call_service.initiate_call(
-        SQLAlchemyUnitOfWork(), agent_name, request.customer_streaming_url
+    call_id = call_service.initiate_call(
+        SQLAlchemyUnitOfWork(),
+        agent_name,
+        request.customer_streaming_url,
+        request.agent_streaming_url,
     )
     background_tasks.add_task(
         recording_service.stream_audio_and_save_in_chunks,
         SQLAlchemyUnitOfWork(),
+        call_id,
         request.customer_streaming_url,
         "mp3",
         "wav",

@@ -18,4 +18,6 @@ class CallSQL(Base):
     sentiment = Column(Float)
     started_at = Column(DateTime)
     ended_at = Column(DateTime)
+    customer_streaming_url = Column(String)
+    agent_streaming_url = Column(String)
     created_at = Column(DateTime)

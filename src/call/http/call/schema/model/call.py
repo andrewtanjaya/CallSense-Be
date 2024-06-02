@@ -30,8 +30,8 @@ class CallDetailResponseModel(BaseModel):
     id: UUID
     call_id: UUID
     sentiment: float
-    started_at: Optional[datetime]
-    ended_at: Optional[datetime]
+    started_at: Optional[int]
+    ended_at: Optional[int]
     created_at: Optional[datetime]
 
     class Config:
@@ -40,8 +40,8 @@ class CallDetailResponseModel(BaseModel):
                 "id": "b399046c-4e86-412f-a1fd-b9190fefbac6",
                 "call_id": "51e94932-6f65-4dd2-9687-0584dbc3996c",
                 "sentiment": "0.9",
-                "started_at": "2023-03-17 09:47:38.767317",
-                "ended_at": "2023-03-17 10:47:38.767317",
+                "started_at": "0",
+                "ended_at": "10",
                 "created_at": "2023-03-17 10:47:38.767317",
             }
         }
