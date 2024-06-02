@@ -80,7 +80,9 @@ class OngoingCallResponseModel(CallResponseModel):
                 "started_at": "2023-03-17 09:47:38.767317",
                 "ended_at": "2023-03-17 10:47:38.767317",
                 "created_at": "2023-03-17 10:47:38.767317",
-                "latest_call_detail": CallDetailResponseModel.Config.schema_extra.get("example")
+                "latest_call_detail": CallDetailResponseModel.Config.schema_extra.get(
+                    "example"
+                ),
             }
         }
 

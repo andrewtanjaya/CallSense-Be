@@ -4,11 +4,13 @@ from common.schema.base.response import BaseWithConfig
 
 
 class InitiateCallRequest(BaseWithConfig):
-    streaming_url: Optional[str]
+    customer_streaming_url: Optional[str]
+    agent_streaming_url: Optional[str]
 
     class Config(BaseWithConfig.Config):
         schema_extra = {
             "example": {
-                "streaming_url": "https://api.example.com/streaming",
+                "customer_streaming_url": "https://api.example.com/streaming",
+                "agent_streaming_url": "https://api.example.com/streaming",
             }
         }

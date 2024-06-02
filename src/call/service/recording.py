@@ -1,18 +1,29 @@
-import requests
-from pydub import AudioSegment
 import io
-import time
 import logging
 import os
+import time
+
+import requests
+from pydub import AudioSegment
+
 from src.call.domain.interface import AbstractUnitOfWork
+from src.call.service import sentiment as sentiment_service
 
 
-def stream_audio_and_save_in_chunks(uow: AbstractUnitOfWork, url: str, source_file_format: str, output_file_format: str, chunk_duration=10):
+def stream_audio_and_save_in_chunks(
+    uow: AbstractUnitOfWork,
+    url: str,
+    source_file_format: str,
+    output_file_format: str,
+    chunk_duration=10,
+):
     # Initialize the request
     response = requests.get(url, stream=True)
 
     if response.status_code != 200:
-        logging.info(f"Failed to retrieve audio. HTTP Status Code: {response.status_code}")
+        logging.info(
+            f"Failed to retrieve audio. HTTP Status Code: {response.status_code}"
+        )
         return
 
     audio_data = io.BytesIO()
@@ -37,17 +48,36 @@ def stream_audio_and_save_in_chunks(uow: AbstractUnitOfWork, url: str, source_fi
 
                 # Convert raw audio data to an AudioSegment
                 audio_data.seek(0)
-                audio_segment = AudioSegment.from_file(audio_data, format=source_file_format)
+                audio_segment = AudioSegment.from_file(
+                    audio_data, format=source_file_format
+                )
 
                 # Export the AudioSegment to a file
-                file_name = f"output_audio_chunk_{chunk_index}.{output_file_format}"
+                file_name = (
+                    f"output_audio_chunk_{chunk_index}.{output_file_format}"
+                )
                 file_path = os.path.join(output_folder, file_name)
                 audio_segment.export(file_path, format=output_file_format)
                 logging.info(f"Audio saved to {file_path}")
 
-                # TODO: need to create new call detail
+                # TODO: need to create new initialize acall detail
 
                 # TODO: need to upload the call detail to the firestorage also :)
+
+                # invoke the function to predict the sentiment
+                # how to make it async
+                # category, confidence = sentiment_service.predict_emotion(file_path)
+                # logging.info(f"category:{category}, confidence:{confidence}")
+
+                # 10 detik keskip bg task
+                # response = requeest.post(''......, call_Id)
+                #
+                #
+                # # TODO: need to create new call detail
+                #
+                #
+                # # TODO: need to upload the call detail to the firestorage also :)
+                # # uow.firestorage.upload(f"{output_folder}/{output_file_name}")
 
                 # Increment the chunk index and reset the audio_data buffer
                 chunk_index += 1
@@ -56,7 +86,9 @@ def stream_audio_and_save_in_chunks(uow: AbstractUnitOfWork, url: str, source_fi
     # Save any remaining audio data
     if audio_data.tell() > 0:
         audio_data.seek(0)
-        audio_segment = AudioSegment.from_file(audio_data, format=source_file_format)
+        audio_segment = AudioSegment.from_file(
+            audio_data, format=source_file_format
+        )
         file_name = f"output_audio_chunk_{chunk_index}.{output_file_format}"
         file_path = os.path.join(output_folder, file_name)
         audio_segment.export(file_path, format=output_file_format)
@@ -64,14 +96,23 @@ def stream_audio_and_save_in_chunks(uow: AbstractUnitOfWork, url: str, source_fi
 
     # TODO: Combine all audio chunks into a single file
     output_file_name = f"combined.{output_file_format}"
-    combine_audio_files(output_folder, output_file_name, format_output_type=output_file_format,
-                        format_input_type=output_file_format)
+    combine_audio_files(
+        output_folder,
+        output_file_name,
+        format_output_type=output_file_format,
+        format_input_type=output_file_format,
+    )
 
     # TODO: invoke upload function to upload to firestorage
     uow.firestorage.upload(f"{output_folder}/{output_file_name}")
 
 
-def combine_audio_files(input_folder: str, output_file_name: str, format_output_type="wav", format_input_type="wav"):
+def combine_audio_files(
+    input_folder: str,
+    output_file_name: str,
+    format_output_type="wav",
+    format_input_type="wav",
+):
     # Create an empty AudioSegment to store the combined audio
     combined_audio = AudioSegment.empty()
 
@@ -80,12 +121,15 @@ def combine_audio_files(input_folder: str, output_file_name: str, format_output_
         if file_name.endswith(f".{format_input_type}"):
             # Load each file and append it to the combined audio
             file_path = os.path.join(input_folder, file_name)
-            audio_segment = AudioSegment.from_file(file_path, format=format_input_type)
+            audio_segment = AudioSegment.from_file(
+                file_path, format=format_input_type
+            )
             combined_audio += audio_segment
 
     # Export the combined audio to a single file
     combined_audio.export(output_file_name, format=format_output_type)
     logging.info(f"Combined audio saved to {output_file_name}")
+
 
 ## Example usage
 # URL of the streaming audio

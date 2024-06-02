@@ -20,10 +20,8 @@ class CallDetailSqlAlchemyRepository(CallDetailAbstractRepository):
             .order_by(desc(CallDetailSQL.created_at))
             .all()
         ]
-    
-    def get_latest_call_detail(
-        self, call_id: UUID
-    ) -> List[CallDetail]:
+
+    def get_latest_call_detail(self, call_id: UUID) -> List[CallDetail]:
         query = (
             self.session.query(CallDetailSQL)
             .where(CallDetailSQL.call_id == call_id)
@@ -45,7 +43,7 @@ class CallDetailSqlAlchemyRepository(CallDetailAbstractRepository):
         if not call_detail:
             return None
         return CallDetail(**call_detail.__dict__)
-    
+
     def _model_to_latest_call_detail_entity(
         self, call_detail: CallDetailSQL
     ) -> Optional[CallDetail]:

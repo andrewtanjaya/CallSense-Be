@@ -1,3 +1,4 @@
+import logging
 from uuid import UUID
 
 from fastapi.responses import ORJSONResponse
@@ -18,10 +19,12 @@ from src.call.http.call.schema.response import (
     GetEndedCalls,
     GetOngoingCalls,
     GetRecordingsResponse,
+    GetSentimentCallResponse,
+    OngoingCallResponseModel,
     RecordingResponseModel,
-    OngoingCallResponseModel
 )
 from src.call.service import call as call_service
+from src.call.service import sentiment as sentiment_service
 
 router = APIRouter(
     default_response_class=ORJSONResponse,
@@ -40,6 +43,7 @@ router = APIRouter(
         404: {"model": NotFoundResponse},
         500: {"model": InternalServerErrorResponse},
     },
+    deprecated=True,
 )
 def get_all_ended_calls():
     calls = call_service.get_ended_calls(SQLAlchemyUnitOfWork())
@@ -67,7 +71,8 @@ def get_all_ongoing_calls():
 
     return GetOngoingCalls(
         data=[
-            OngoingCallResponseModel(**call_entity.dict()) for call_entity in calls
+            OngoingCallResponseModel(**call_entity.dict())
+            for call_entity in calls
         ],
     )
 
@@ -142,3 +147,21 @@ def get_firestore_collections():
 )
 def delete_call(call_id: UUID):
     call_service.delete_call(SQLAlchemyUnitOfWork(), call_id)
+
+
+@router.post(
+    "/sentiment",
+    status_code=200,
+    responses={
+        200: {"model": GetSentimentCallResponse},
+        400: {"model": BadRequestResponse},
+        404: {"model": NotFoundResponse},
+        500: {"model": InternalServerErrorResponse},
+    },
+)
+def sentiment(file_path: str):
+    category, confidence = sentiment_service.predict_emotion(file_path)
+    logging.info(f"category:{category}, confidence:{confidence}")
+    return GetSentimentCallResponse(
+        category=category, confidence=confidence * 100
+    )
