@@ -78,17 +78,22 @@ class CallSqlAlchemyRepository(CallAbstractRepository):
             .all()
         ]
 
-    def get_latest_ongoing_call(self, agent_name: str) -> Optional[OngoingCall]:
+    def get_latest_ongoing_call(self, agent_name: str) -> Optional[Call]:
         call = (
             self.session.query(CallSQL)
             .filter_by(ended_at=None, agent_name=agent_name)
             .order_by(desc(CallSQL.created_at))
             .first()
         )
-        return self._model_to_ongoing_entity(call)
+        return self._model_to_entity(call)
 
     def _entity_to_model(self, call: Call) -> CallSQL:
         return CallSQL(**call.dict())
+
+    def _model_to_entity(self, call: CallSQL) -> Optional[Call]:
+        if not call:
+            return None
+        return Call(**call.__dict__)
 
     def _model_to_ongoing_entity(self, call: CallSQL) -> Optional[OngoingCall]:
         if not call:
