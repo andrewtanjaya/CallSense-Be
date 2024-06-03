@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from datetime import datetime
 from typing import List, Optional
 from uuid import UUID
 
@@ -52,6 +51,10 @@ class CallAbstractRepository(ABC):
 class CallDetailAbstractRepository(ABC):
     @abstractmethod
     def create(self, call_detail: CallDetail) -> CallDetail:
+        raise NotImplementedError
+
+    @abstractmethod
+    def update_sentiment(self, id: UUID, sentiment: float) -> CallDetail:
         raise NotImplementedError
 
     @abstractmethod

@@ -1,7 +1,7 @@
 from typing import List, Optional
 from uuid import UUID
 
-from sqlalchemy import desc
+from sqlalchemy import desc, update
 
 from common.orm.call_detail import CallDetailSQL
 from src.call.domain.entity import CallDetail
@@ -14,6 +14,13 @@ class CallDetailSqlAlchemyRepository(CallDetailAbstractRepository):
 
     def create(self, call_detail: CallDetail):
         self.session.add(self._entity_to_model(call_detail))
+
+    def update_sentiment(self, id: UUID, sentiment: float):
+        self.session.execute(
+            update(CallDetailSQL)
+            .where(CallDetailSQL.id == CallDetailSQL.id)
+            .values(sentiment=sentiment)
+        )
 
     def get_call_details(self, call_id: UUID) -> List[CallDetail]:
         return [

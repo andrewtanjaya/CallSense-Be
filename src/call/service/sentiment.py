@@ -1,10 +1,13 @@
 import logging
 import os
+from uuid import UUID
 
 import joblib
 import librosa
 import numpy as np
 from tensorflow.keras.saving import load_model
+
+from src.call.domain.interface import AbstractUnitOfWork
 
 
 def extract_features(file_path):
@@ -40,18 +43,37 @@ def load_data(data_dir):
     return np.array(features), np.array(labels)
 
 
-def predict_emotion(file_path):
-    feature = np.expand_dims(extract_features(file_path), axis=0)
-    logging.info(f"feature:{feature}")
-    prediction = model.predict(feature)
-    logging.info(f"prediction: {prediction}")
-    confidence_scores = np.max(prediction, axis=1)
-    logging.info(f"confidence: {confidence_scores}")
-    predicted_label = label_encoder.inverse_transform(
-        np.argmax(prediction, axis=1)
-    )
-    return predicted_label[0], confidence_scores
-    # TODO: need to update call detail
+def predict_emotion(
+    uow: AbstractUnitOfWork, file_path: str, call_detail_id: UUID
+):
+    with uow:
+        feature = np.expand_dims(extract_features(file_path), axis=0)
+        logging.info(f"feature:{feature}")
+        prediction = model.predict(feature)
+        logging.info(f"prediction: {prediction}")
+        confidence_scores = np.max(prediction, axis=1)
+        logging.info(f"confidence: {confidence_scores}")
+        predicted_label = label_encoder.inverse_transform(
+            np.argmax(prediction, axis=1)
+        )
+
+        ## update call detail sentiment
+        confidence_score_value = confidence_scores[0]
+        predicted_label_value = predicted_label[0]
+
+        logging.info(
+            f"category:{predicted_label_value}, confidence:{confidence_score_value}"
+        )
+        if predicted_label_value == "negative":
+            confidence_score_value *= -1
+
+        uow.call_detail.update_sentiment(
+            uow, call_detail_id, confidence_score_value
+        )
+        uow.commit()
+
+        # return predicted_label[0], confidence_scores
+        # TODO: need to update call detail
 
 
 label_encoder = joblib.load("assets/models/label_encoder.pkl")
