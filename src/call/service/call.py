@@ -106,7 +106,7 @@ def initiate_call(
 
 def end_call(uow: AbstractUnitOfWork, agent_name: str):
     with uow:
-        # trigger combinator recording files then upload to firestore
+        # calculate the sentiment based on call detail
         latest_call = uow.call.get_latest_ongoing_call(agent_name)
         if not latest_call:
             raise NotFoundError(message="No ongoing call found")

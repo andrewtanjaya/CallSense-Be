@@ -9,9 +9,10 @@ import requests
 from aiohttp import ClientSession
 from pydub import AudioSegment
 
-from src.call.domain.entity import Call, CallDetail
+from src.call.domain.entity import Call, CallDetail, Recording
 from src.call.domain.interface import AbstractUnitOfWork
 from src.call.service import sentiment as sentiment_service
+from common.config import FIREBASE_STORAGE_BUCKET
 
 # async def async_process_audio(
 #     uow: AbstractUnitOfWork, file_path: str, call_detail_id: UUID
@@ -55,6 +56,9 @@ def stream_audio_and_save_in_chunks(
         if not os.path.exists(output_folder):
             os.makedirs(output_folder)
 
+
+        iteration = 0
+
         for chunk in response.iter_content(chunk_size=1024):
             if chunk:
                 audio_data.write(chunk)
@@ -83,9 +87,9 @@ def stream_audio_and_save_in_chunks(
                         call_id=call_id,
                         audio_path=file_path,
                         # stil false
-                        started_at=elapsed_time - chunk_duration,
+                        started_at=(elapsed_time - chunk_duration) + iteration,
                         # stil false
-                        ended_at=elapsed_time,
+                        ended_at=elapsed_time + iteration,
                     )
                     uow.call_detail.create(new_call_detail)
                     uow.commit()
@@ -99,24 +103,12 @@ def stream_audio_and_save_in_chunks(
                     if response.status_code == 200:
                         logging.info("Sentiment analysis initiated")
 
-                    # temp testing upload to filestorage
-                    # uow.firestorage.upload(file_path)
-
-                    # invoke the function to predict the sentiment
-                    # how to make it async
-                    # category, confidence = sentiment_service.predict_emotion(file_path)
-                    # logging.info(f"category:{category}, confidence:{confidence}")
-                    # masih ga bisa
-                    # requests.post()
-                    # background_tasks.add_task(
-                    #     sentiment_service.predict_emotion,
-                    #     uow,
-                    #     file_path,
-                    #     new_call_detail.id,
-                    # )
                     # Increment the chunk index and reset the audio_data buffer
                     chunk_index += 1
                     audio_data = io.BytesIO()
+
+                    # for started_at and ended_at
+                    iteration += 10
 
         # Save any remaining audio data
         if audio_data.tell() > 0:
@@ -143,6 +135,15 @@ def stream_audio_and_save_in_chunks(
         # TODO: invoke upload function to upload to firestorage
         uow.firestorage.upload(file_path)
         # remove file from the folder
+        os.remove(output_folder)
+
+        uow.recording.create(
+            Recording(
+                call_id=call_id,
+                audio_path=f"gs://{FIREBASE_STORAGE_BUCKET}/{file_path}",
+            )
+        )
+        uow.commit()
 
 
 def combine_audio_files(

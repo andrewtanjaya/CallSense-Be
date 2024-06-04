@@ -12,6 +12,9 @@ class RecordingSqlAlchemyRepository(RecordingAbstractRepository):
     def __init__(self, session) -> None:
         self.session = session
 
+    def create(self, recording: Recording) -> None:
+        self.session.add(self._entity_to_model(recording))
+
     def get_recordings(self, call_id: UUID) -> List[Recording]:
         return [
             self._model_to_entity(recording)

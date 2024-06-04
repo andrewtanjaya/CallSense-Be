@@ -71,6 +71,10 @@ class RecordingAbstractRepository(ABC):
     def get_recordings(self, call_id) -> List[Recording]:
         raise NotImplementedError
 
+    @abstractmethod
+    def create(self, recording: Recording) -> Recording:
+        raise NotImplementedError
+
 
 class AgentAbstractRepository(ABC):
     @abstractmethod
