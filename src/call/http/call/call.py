@@ -110,26 +110,30 @@ def get_call_details(call_id: UUID):
         500: {"model": InternalServerErrorResponse},
     },
 )
-def get_call_recordings(call_id: UUID):
-    recordings = call_service.get_recordings(SQLAlchemyUnitOfWork(), call_id)
+def get_call_recording(call_id: UUID):
+    recording = call_service.get_one_recording(SQLAlchemyUnitOfWork(), call_id)
 
-    responses_data = []
-
-    for recording in recordings:
-        call_details = call_service.get_call_details(
-            SQLAlchemyUnitOfWork(), recording.call_id
+    call_details = call_service.get_call_details(
+        SQLAlchemyUnitOfWork(), recording.call_id
+    )
+    call_detail_models = [
+        CallDetailResponseModel(
+            **call_detail.dict(exclude={"sentiment"}),
+            sentiment=call_detail.sentiment * 100
         )
-        call_detail_models = [
-            CallDetailResponseModel(**call_detail.dict())
-            for call_detail in call_details
-        ]
-        responses_data.append(
-            RecordingResponseModel(
-                **recording.dict(), details=call_detail_models
-            )
-        )
+        for call_detail in call_details
+    ]
+    # responses_data.append(
+    #     RecordingResponseModel(
+    #         **recording.dict(), details=call_detail_models
+    #     )
+    # )
 
-    return GetRecordingsResponse(data=responses_data)
+    return GetRecordingsResponse(
+        data=RecordingResponseModel(
+            **recording.dict(), details=call_detail_models
+        )
+    )
 
 
 @router.get(

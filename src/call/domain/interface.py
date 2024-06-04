@@ -75,6 +75,10 @@ class RecordingAbstractRepository(ABC):
     def create(self, recording: Recording) -> Recording:
         raise NotImplementedError
 
+    @abstractmethod
+    def get_one_recording(self, call_id: UUID) -> Optional[Recording]:
+        raise NotImplementedError
+
 
 class AgentAbstractRepository(ABC):
     @abstractmethod

@@ -55,7 +55,9 @@ class GetCallDetailsResponse(ListDataBaseResponseModel):
         }
 
 
-class GetRecordingsResponse(ListDataBaseResponseModel):
+class GetRecordingsResponse(BaseResponse):
+    data: RecordingResponseModel
+
     def __init__(self, **data: Any) -> None:
         super().__init__(**data, message="Get recordings successful")
 
@@ -63,9 +65,7 @@ class GetRecordingsResponse(ListDataBaseResponseModel):
         schema_extra = {
             "example": {
                 "message": "Get recordings successful",
-                "data": [
-                    RecordingResponseModel.Config.schema_extra.get("example")
-                ],
+                "data": RecordingResponseModel.Config.schema_extra.get("example")
             }
         }
 

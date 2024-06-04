@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List
+from typing import List, Optional
 from uuid import UUID, uuid4
 
 from common.exception import NotFoundError
@@ -41,6 +41,13 @@ def get_ongoing_calls(
 def get_recordings(uow: AbstractUnitOfWork, call_id: UUID) -> List[Recording]:
     with uow:
         return uow.recording.get_recordings(call_id=call_id)
+
+
+def get_one_recording(
+    uow: AbstractUnitOfWork, call_id: UUID
+) -> Optional[Recording]:
+    with uow:
+        return uow.recording.get_one_recording(call_id=call_id)
 
 
 def get_call_details(

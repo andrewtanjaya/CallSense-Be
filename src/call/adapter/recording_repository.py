@@ -15,6 +15,15 @@ class RecordingSqlAlchemyRepository(RecordingAbstractRepository):
     def create(self, recording: Recording) -> None:
         self.session.add(self._entity_to_model(recording))
 
+    def get_one_recording(self, call_id: UUID) -> Optional[Recording]:
+        recording = (
+            self.session.query(RecordingSQL)
+            .filter_by(call_id=call_id)
+            .order_by(desc(RecordingSQL.created_at))
+            .first()
+        )
+        return self._model_to_entity(recording)
+
     def get_recordings(self, call_id: UUID) -> List[Recording]:
         return [
             self._model_to_entity(recording)
