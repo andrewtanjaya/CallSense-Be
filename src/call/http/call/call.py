@@ -111,14 +111,25 @@ def get_call_details(call_id: UUID):
     },
 )
 def get_call_recordings(call_id: UUID):
-    return GetRecordingsResponse(
-        data=[
-            RecordingResponseModel(**recording.dict())
-            for recording in call_service.get_recordings(
-                SQLAlchemyUnitOfWork(), call_id
+    recordings = call_service.get_recordings(SQLAlchemyUnitOfWork(), call_id)
+
+    responses_data = []
+
+    for recording in recordings:
+        call_details = call_service.get_call_details(
+            SQLAlchemyUnitOfWork(), recording.call_id
+        )
+        call_detail_models = [
+            CallDetailResponseModel(**call_detail.dict())
+            for call_detail in call_details
+        ]
+        responses_data.append(
+            RecordingResponseModel(
+                **recording.dict(), details=call_detail_models
             )
-        ],
-    )
+        )
+
+    return GetRecordingsResponse(data=responses_data)
 
 
 @router.get(

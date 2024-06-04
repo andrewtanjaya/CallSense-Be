@@ -87,11 +87,29 @@ class OngoingCallResponseModel(CallResponseModel):
         }
 
 
+class RecordingCallDetailResponseModel(BaseModel):
+    id: UUID
+    sentiment: Optional[float]
+    started_at: Optional[int]
+    ended_at: Optional[int]
+
+    class Config:
+        schema_extra = {
+            "example": {
+                "id": "51e94932-6f65-4dd2-9687-0584dbc3996c",
+                "sentiment": "0.9",
+                "started_at": "0",
+                "ended_at": "10",
+            }
+        }
+
+
 class RecordingResponseModel(BaseModel):
     id: UUID
     call_id: UUID
     url: Optional[str]
     created_at: Optional[datetime]
+    details: Optional[List[RecordingCallDetailResponseModel]]
 
     class Config:
         schema_extra = {
@@ -100,5 +118,10 @@ class RecordingResponseModel(BaseModel):
                 "call_id": "a3164093-aa4a-442b-be7e-9730d2a4924d",
                 "url": "http://example.com",
                 "created_at": "2023-03-17 10:47:38.767317",
+                "details": [
+                    RecordingCallDetailResponseModel.Config.schema_extra.get(
+                        "example"
+                    )
+                ],
             }
         }

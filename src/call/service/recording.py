@@ -9,10 +9,10 @@ import requests
 from aiohttp import ClientSession
 from pydub import AudioSegment
 
+from common.config import FIREBASE_STORAGE_BUCKET
 from src.call.domain.entity import Call, CallDetail, Recording
 from src.call.domain.interface import AbstractUnitOfWork
 from src.call.service import sentiment as sentiment_service
-from common.config import FIREBASE_STORAGE_BUCKET
 
 # async def async_process_audio(
 #     uow: AbstractUnitOfWork, file_path: str, call_detail_id: UUID
@@ -55,7 +55,6 @@ def stream_audio_and_save_in_chunks(
         # Create output folder if it doesn't exist
         if not os.path.exists(output_folder):
             os.makedirs(output_folder)
-
 
         iteration = 0
 
