@@ -1,6 +1,7 @@
 import logging
 from uuid import UUID
 
+from fastapi import BackgroundTasks
 from fastapi.responses import ORJSONResponse
 from fastapi.routing import APIRouter
 
@@ -11,6 +12,7 @@ from common.schema.exception.response import (
     NotFoundResponse,
 )
 from src.call.adapter.uow import SQLAlchemyUnitOfWork
+from src.call.http.call.schema.request import CallDetailSentimentRequest
 from src.call.http.call.schema.response import (
     CallDetailResponseModel,
     CallResponseModel,
@@ -150,18 +152,28 @@ def delete_call(call_id: UUID):
 
 
 @router.post(
-    "/sentiment",
+    "/{call_detail_id}/sentiment",
     status_code=200,
     responses={
-        200: {"model": GetSentimentCallResponse},
+        200: {"model": SuccessResponse},
         400: {"model": BadRequestResponse},
         404: {"model": NotFoundResponse},
         500: {"model": InternalServerErrorResponse},
     },
 )
-def sentiment(file_path: str):
-    category, confidence = sentiment_service.predict_emotion(file_path)
-    logging.info(f"category:{category}, confidence:{confidence}")
-    return GetSentimentCallResponse(
-        category=category, confidence=confidence * 100
+def sentiment(
+    call_detail_id: UUID,
+    request: CallDetailSentimentRequest,
+    background_tasks: BackgroundTasks,
+):
+    background_tasks.add_task(
+        sentiment_service.predict_emotion,
+        SQLAlchemyUnitOfWork(),
+        request.file_path,
+        call_detail_id,
     )
+    # logging.info(f"category:{category}, confidence:{confidence}")
+    return SuccessResponse(message="AI Sentiment called successfully")
+    # return GetSentimentCallResponse(
+    #     category=category, confidence=confidence * 100
+    # )

@@ -18,7 +18,7 @@ class CallDetailSqlAlchemyRepository(CallDetailAbstractRepository):
     def update_sentiment(self, id: UUID, sentiment: float):
         self.session.execute(
             update(CallDetailSQL)
-            .where(CallDetailSQL.id == CallDetailSQL.id)
+            .where(CallDetailSQL.id == id)
             .values(sentiment=sentiment)
         )
 

@@ -16,7 +16,11 @@ def extract_features(file_path):
     stft = np.abs(librosa.stft(y))
     chroma = librosa.feature.chroma_stft(S=stft, sr=sr)
     mel = librosa.feature.melspectrogram(y=y, sr=sr)
-    contrast = librosa.feature.spectral_contrast(S=stft, sr=sr)
+    n_bands = 4
+
+    contrast = librosa.feature.spectral_contrast(
+        S=stft, sr=sr, n_bands=n_bands
+    )
     features = np.concatenate(
         (
             np.mean(mfccs, axis=1),
@@ -47,6 +51,7 @@ def predict_emotion(
     uow: AbstractUnitOfWork, file_path: str, call_detail_id: UUID
 ):
     with uow:
+        logging.info("Initiating prediction")
         feature = np.expand_dims(extract_features(file_path), axis=0)
         logging.info(f"feature:{feature}")
         prediction = model.predict(feature)
@@ -68,7 +73,7 @@ def predict_emotion(
             confidence_score_value *= -1
 
         uow.call_detail.update_sentiment(
-            uow, call_detail_id, confidence_score_value
+            call_detail_id, float(confidence_score_value)
         )
         uow.commit()
 

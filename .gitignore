@@ -189,4 +189,5 @@ openapi.json
 
 credentials.json
 
-./audio_chunks
+audio_chunks/
+

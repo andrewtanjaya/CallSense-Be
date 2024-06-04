@@ -71,7 +71,6 @@ def start_call(
     background_tasks.add_task(
         recording_service.stream_audio_and_save_in_chunks,
         SQLAlchemyUnitOfWork(),
-        background_tasks,
         call_id,
         request.customer_streaming_url,
         "mp3",
