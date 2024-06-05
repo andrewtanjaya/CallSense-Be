@@ -10,6 +10,9 @@ def get_agents(
     with uow:
         agents = uow.agent.get_agents()
         for agent in agents:
-            agent.calls = uow.call.get_ended_calls(agent.agent_name)
+            calls = uow.call.get_ended_calls(agent.agent_name)
+            for call in calls:
+                call.sentiment *= 100
+            agent.calls = calls
 
         return agents

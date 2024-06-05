@@ -14,19 +14,15 @@ from src.call.domain.entity import Call, CallDetail, Recording
 from src.call.domain.interface import AbstractUnitOfWork
 from src.call.service import sentiment as sentiment_service
 
-# async def async_process_audio(
-#     uow: AbstractUnitOfWork, file_path: str, call_detail_id: UUID
-# ):
-#     # Example async function to process audio
-#     logging.info(
-#         f"Async processing of audio at {file_path} for call detail ID {call_detail_id}"
-#     )
-#     # Simulate async processing (e.g., uploading, prediction, etc.)
-#     # await asyncio.sleep(1)  # Replace with actual async operations
-#     await asyncio.create_task(
-#         sentiment_service.predict_emotion(uow, file_path, call_detail_id)
-#     )
-#     # await sentiment_service.predict_emotion(uow, file_path, call_detail_id)
+
+def create_recording(
+    uow: AbstractUnitOfWork,
+    call_id: UUID,
+    url: str,
+):
+    with uow:
+        uow.recording.create(Recording(call_id=call_id, url=url))
+        uow.commit()
 
 
 def stream_audio_and_save_in_chunks(
@@ -120,6 +116,25 @@ def stream_audio_and_save_in_chunks(
             audio_segment.export(file_path, format=output_file_format)
             logging.info(f"Audio saved to {file_path}")
 
+            # TODO: need to create new initialize a call detail
+            new_call_detail = CallDetail(
+                call_id=call_id,
+                audio_path=file_path,
+                # stil false
+                started_at=iteration,
+                # stil false
+                ended_at=elapsed_time + iteration,
+            )
+            uow.call_detail.create(new_call_detail)
+            uow.commit()
+
+            response = requests.post(
+                f"http://localhost:8000/calls/{new_call_detail.id}/sentiment",
+                json={"file_path": file_path},
+            )
+            if response.status_code == 200:
+                logging.info("Sentiment analysis initiated")
+
         # TODO: Combine all audio chunks into a single file
         output_file_name = f"{call_id}_combined.{output_file_format}"
         combine_audio_files(
@@ -132,17 +147,19 @@ def stream_audio_and_save_in_chunks(
         file_path = os.path.join(output_folder, output_file_name)
 
         # TODO: invoke upload function to upload to firestorage
-        uow.firestorage.upload(file_path)
+        url = uow.firestorage.upload(file_path)
+        logging.info(f"File uploaded to {url}")
         # remove file from the folder
-        os.remove(output_folder)
 
-        uow.recording.create(
-            Recording(
-                call_id=call_id,
-                audio_path=f"gs://{FIREBASE_STORAGE_BUCKET}/{file_path}",
-            )
-        )
-        uow.commit()
+        create_recording(uow, call_id, url)
+
+        # uow.recording.create(
+        #     Recording(
+        #         call_id=call_id,
+        #         url=url
+        #     )
+        # )
+        # uow.commit()
 
 
 def combine_audio_files(

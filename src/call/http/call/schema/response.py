@@ -65,7 +65,9 @@ class GetRecordingsResponse(BaseResponse):
         schema_extra = {
             "example": {
                 "message": "Get recordings successful",
-                "data": RecordingResponseModel.Config.schema_extra.get("example")
+                "data": RecordingResponseModel.Config.schema_extra.get(
+                    "example"
+                ),
             }
         }
 

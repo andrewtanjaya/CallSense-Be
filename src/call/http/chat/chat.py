@@ -32,8 +32,10 @@ router = APIRouter(
         500: {"model": InternalServerErrorResponse},
     },
 )
-def sentiment(question: str):
-    answer = rag_service.qa.invoke(question)["result"]
+def generate_response(question: str):
+    answer: str = rag_service.qa.invoke(question)["result"]
     return GetChatbotGeneratedAnswerResponse(
-        data=GetChatbotGeneratedAnswerModel(question=question, answer=answer)
+        data=GetChatbotGeneratedAnswerModel(
+            question=question.strip(), answer=answer.strip()
+        )
     )

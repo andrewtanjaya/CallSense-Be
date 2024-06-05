@@ -26,6 +26,7 @@ from src.call.http.call.schema.response import (
     RecordingResponseModel,
 )
 from src.call.service import call as call_service
+from src.call.service import recording as recording_service
 from src.call.service import sentiment as sentiment_service
 
 router = APIRouter(
@@ -113,16 +114,18 @@ def get_call_details(call_id: UUID):
 def get_call_recording(call_id: UUID):
     recording = call_service.get_one_recording(SQLAlchemyUnitOfWork(), call_id)
 
-    call_details = call_service.get_call_details(
-        SQLAlchemyUnitOfWork(), recording.call_id
-    )
-    call_detail_models = [
-        CallDetailResponseModel(
-            **call_detail.dict(exclude={"sentiment"}),
-            sentiment=call_detail.sentiment * 100
+    call_detail_models = []
+    if recording is not None:
+        call_details = call_service.get_call_details(
+            SQLAlchemyUnitOfWork(), recording.call_id
         )
-        for call_detail in call_details
-    ]
+        call_detail_models = [
+            CallDetailResponseModel(
+                **call_detail.dict(exclude={"sentiment"}),
+                sentiment=call_detail.sentiment * 100
+            )
+            for call_detail in call_details
+        ]
     # responses_data.append(
     #     RecordingResponseModel(
     #         **recording.dict(), details=call_detail_models
@@ -192,3 +195,24 @@ def sentiment(
     # return GetSentimentCallResponse(
     #     category=category, confidence=confidence * 100
     # )
+
+
+@router.post(
+    "/{call_id}/recordings",
+    status_code=200,
+    responses={
+        200: {"model": SuccessResponse},
+        400: {"model": BadRequestResponse},
+        404: {"model": NotFoundResponse},
+        500: {"model": InternalServerErrorResponse},
+    },
+)
+def create_recordings(
+    call_id: UUID,
+):
+    recording_service.create_recording(
+        SQLAlchemyUnitOfWork(),
+        call_id,
+        "https://google.com/",
+    )
+    return SuccessResponse(message="AI Sentiment called successfully")

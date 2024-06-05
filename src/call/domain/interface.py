@@ -94,7 +94,11 @@ class FireStoreAbstractExternal(ABC):
 
 class FireStorageAbstractExternal(ABC):
     @abstractmethod
-    def upload(self, file_name: str):
+    def upload(self, file_name: str) -> str:
+        raise NotImplementedError
+
+    @abstractmethod
+    def get_storage_url(self, object_name: str):
         raise NotImplementedError
 
 

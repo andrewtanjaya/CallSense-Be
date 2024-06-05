@@ -47,7 +47,10 @@ def get_one_recording(
     uow: AbstractUnitOfWork, call_id: UUID
 ) -> Optional[Recording]:
     with uow:
-        return uow.recording.get_one_recording(call_id=call_id)
+        recording = uow.recording.get_one_recording(call_id=call_id)
+        # if recording:
+        #     recording.url = uow.firestorage.get_storage_url(recording.url)
+        return recording
 
 
 def get_call_details(
@@ -118,5 +121,23 @@ def end_call(uow: AbstractUnitOfWork, agent_name: str):
         if not latest_call:
             raise NotFoundError(message="No ongoing call found")
 
-        uow.call.end(latest_call.id)
+        call_details = uow.call_detail.get_call_details(latest_call.id)
+
+        total_value = 0
+        total_ended_at = 0
+        for call_detail in call_details:
+            if call_detail.sentiment > 0.3:
+                value = call_detail.ended_at
+            elif call_detail.sentiment <= 0.3:
+                value = call_detail.ended_at * -1
+            else:
+                value = 0
+            total_value += value
+            total_ended_at += call_detail.ended_at
+
+        result = total_value / total_ended_at
+
+        latest_call.ended_at = datetime.utcnow()
+        latest_call.sentiment = result
+        uow.call.update(latest_call)
         uow.commit()
