@@ -24,6 +24,17 @@ def get_ended_calls(
         return ended_calls
 
 
+def get_agent_ended_calls(
+    uow: AbstractUnitOfWork, agent_name: str
+) -> List[EndedCall]:
+    with uow:
+        ended_calls = uow.call.get_ended_calls(agent_name)
+        for call in ended_calls:
+            call.details = uow.call_detail.get_call_details(call.id)
+
+        return ended_calls
+
+
 def get_ongoing_calls(
     uow: AbstractUnitOfWork,
 ) -> List[OngoingCall]:

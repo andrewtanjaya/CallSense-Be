@@ -39,20 +39,25 @@ router = APIRouter(
 def get_all_agents():
     agents = agent_service.get_agents(SQLAlchemyUnitOfWork())
 
-    total_sentiment = 0
-    ended_calls = call_service.get_ended_calls(SQLAlchemyUnitOfWork())
-    for ended_call in ended_calls:
-        total_sentiment += ended_call.sentiment
+    for agent in agents:
+        total_sentiment = 0
+        ended_calls = call_service.get_agent_ended_calls(
+            SQLAlchemyUnitOfWork(), agent.agent_name
+        )
+        for ended_call in ended_calls:
+            total_sentiment += ended_call.sentiment
 
-    average_sentiment = (
-        total_sentiment / len(ended_calls) if ended_calls else 0
-    )
+        average_sentiment = (
+            total_sentiment / len(ended_calls) if ended_calls else 0
+        )
+
+        agent.average_sentiment = average_sentiment
 
     return GetAgents(
         data=[
             AgentResponseModel(
                 **agent_entity.dict(exclude={"average_sentiment"}),
-                average_sentiment=average_sentiment * 100
+                average_sentiment=agent_entity.average_sentiment * 100
             )
             for agent_entity in agents
         ],
