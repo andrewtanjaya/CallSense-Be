@@ -88,7 +88,7 @@ repo_id = "google/gemma-2b-it"
 llm = HuggingFaceEndpoint(
     repo_id=repo_id,  # ID of the Hugging Face model repository
     max_length=1000,  # Maximum length of generated text
-    temperature=0.5,  # Sampling temperature for text generation
+    temperature=1,  # Sampling temperature for text generation
     huggingfacehub_api_token=HUGGINGFACE_HUB_API_TOKEN,
 )
 

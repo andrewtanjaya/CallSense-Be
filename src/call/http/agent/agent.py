@@ -51,7 +51,8 @@ def get_all_agents():
     return GetAgents(
         data=[
             AgentResponseModel(
-                **agent_entity.dict(exclude={"average_sentiment"}), average_sentiment=average_sentiment * 100
+                **agent_entity.dict(exclude={"average_sentiment"}),
+                average_sentiment=average_sentiment * 100
             )
             for agent_entity in agents
         ],

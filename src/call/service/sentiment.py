@@ -12,15 +12,15 @@ from src.call.domain.interface import AbstractUnitOfWork
 
 def extract_features(file_path):
     y, sr = librosa.load(file_path, sr=None)
-    mfccs = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=40)
+    mfccs = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=100)
     stft = np.abs(librosa.stft(y))
     chroma = librosa.feature.chroma_stft(S=stft, sr=sr)
-    mel = librosa.feature.melspectrogram(y=y, sr=sr)
+    mel = librosa.feature.melspectrogram(y=y, sr=sr)  # fmax=fmax_mel
     n_bands = 4
 
     contrast = librosa.feature.spectral_contrast(
         S=stft, sr=sr, n_bands=n_bands
-    )
+    )  # , fmin=fmin
     features = np.concatenate(
         (
             np.mean(mfccs, axis=1),
@@ -32,21 +32,6 @@ def extract_features(file_path):
     return features
 
 
-def load_data(data_dir):
-    labels = []
-    features = []
-    for folder in os.listdir(data_dir):
-        folder_path = os.path.join(data_dir, folder)
-        if os.path.isdir(folder_path):
-            for file_name in os.listdir(folder_path):
-                if file_name.endswith(".wav"):
-                    file_path = os.path.join(folder_path, file_name)
-                    feature = extract_features(file_path)
-                    features.append(feature)
-                    labels.append(file_name.split(".")[0])
-    return np.array(features), np.array(labels)
-
-
 def predict_emotion(
     uow: AbstractUnitOfWork, file_path: str, call_detail_id: UUID
 ):
@@ -54,13 +39,24 @@ def predict_emotion(
         logging.info("Initiating prediction")
         feature = np.expand_dims(extract_features(file_path), axis=0)
         logging.info(f"feature:{feature}")
+
         prediction = model.predict(feature)
         logging.info(f"prediction: {prediction}")
-        confidence_scores = np.max(prediction, axis=1)
+
+        if prediction > 0.5:
+            confidence_scores = prediction
+        else:
+            confidence_scores = 1 - prediction
+
         logging.info(f"confidence: {confidence_scores}")
-        predicted_label = label_encoder.inverse_transform(
-            np.argmax(prediction, axis=1)
-        )
+
+        predicted_labels = (prediction > 0.5).astype(int)
+
+        # predicted_label = label_encoder.inverse_transform(
+        #     np.argmax(prediction, axis=1)
+        # )
+
+        predicted_label = label_encoder.inverse_transform(predicted_labels)
 
         ## update call detail sentiment
         confidence_score_value = confidence_scores[0]
